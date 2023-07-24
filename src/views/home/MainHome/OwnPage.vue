@@ -13,13 +13,24 @@
                 <el-row class="my-row">
                     <span style="font-size: 20px;">个性签名</span>
                 </el-row>
-                <el-row class="my-row">
+                <el-row class="my-row" v-if="isshowSignature">
                     <span style="font-size: 15px;">{{ signature }}</span>
+                </el-row>
+                <el-row class="my-row" v-else>
+                    <el-row>
+                        <el-input v-model="signature" placeholder="请输入个性签名"></el-input>
+                    </el-row>
+                    <el-row>
+                        <el-button type="primary" @click="saveSignature">保存</el-button>
+                        <el-button type="default" @click="cancelSignature">取消</el-button>
+                    </el-row>
+
                 </el-row>
             </el-col>
             <el-col :span="10" class="button-col">
                 <el-button class="edit-avatar-button" type="primary" @click="showAvatarDialog">更换头像</el-button>
-                <el-button class="edit-signature-button" type="primary" @click="showSignatureDialog = true">编辑个性签名</el-button>
+                <el-button class="edit-signature-button" type="primary"
+                    @click="showSignatureDialog = true">编辑个性签名</el-button>
             </el-col>
         </el-row>
     </div>
@@ -78,7 +89,7 @@
                             </div>
                         </template>
                         <!-- USERINFO - ID -->
-                        123
+                        <p>{{ userInfo.id }}</p>
                     </el-descriptions-item>
                     <!-- 用户昵称 -->
                     <el-descriptions-item>
@@ -121,7 +132,7 @@
                             </div>
                         </template>
                         <!-- USERINFO - Name     -->
-                        小李觉
+                        <p>{{ userInfo.name }}</p>
                     </el-descriptions-item>
                     <!-- 登记不可修改 -->
                     <el-descriptions-item>
@@ -134,7 +145,9 @@
                             </div>
                         </template>
                         <!-- USERINFO - UserLevel   -->
-                        <el-tag size="small">Level.1</el-tag>
+                        <el-tag size="small">
+                            <p>{{ userInfo.userlevel }}</p>
+                        </el-tag>
                     </el-descriptions-item>
                     <!-- 身份证号不可修改 -->
                     <el-descriptions-item>
@@ -146,8 +159,8 @@
                                 身份证号
                             </div>
                         </template>
-                        <!-- USERINFO - Indentify   -->
-                        111111200211111111
+                        <!-- USERINFO - Indentity   -->
+                        <p>{{ userInfo.identity }}</p>
                     </el-descriptions-item>
                     <!-- 电子邮箱可以修改 -->
                     <el-descriptions-item>
@@ -168,31 +181,6 @@
                 </el-descriptions>
             </el-collapse-item>
             <p></p>
-            <el-collapse-item title="Efficiency" name="3">
-                <div>
-                    Simplify the process: keep operating process simple and intuitive;
-                </div>
-                <div>
-                    Definite and clear: enunciate your intentions clearly so that the
-                    users can quickly understand and make decisions;
-                </div>
-                <div>
-                    Easy to identify: the interface should be straightforward, which helps
-                    the users to identify and frees them from memorizing and recalling.
-                </div>
-            </el-collapse-item>
-            <p></p>
-            <el-collapse-item title="Controllability" name="4">
-                <div>
-                    Decision making: giving advices about operations is acceptable, but do
-                    not make decisions for the users;
-                </div>
-                <div>
-                    Controlled consequences: users should be granted the freedom to
-                    operate, including canceling, aborting or terminating current
-                    operation.
-                </div>
-            </el-collapse-item>
         </el-collapse>
     </div>
 </template>
@@ -205,7 +193,9 @@ import {
     Tickets,
     User
 } from '@element-plus/icons-vue'
+
 import { computed, ref } from 'vue'
+import { getUserProfile } from '@/api/mainhome.js'
 
 const size = ref('')
 const iconStyle = computed(() => {
@@ -221,18 +211,35 @@ const iconStyle = computed(() => {
 })
 
 export default {
+    create() {
+        console.log("尝试拿到个人信息")
+        //请求地址,this和vm指的是全局
+        getUserProfile().then((res) => {
+            console.log(res.data)
+            if (res.data === false) {
+                console.log("拿数据失败")
+            }
+            else {
+                console.log("拿数据成功")
+            }
+        })
+    },
     data() {
         return {
+            isshowSignature: true,
             editMode: false,
-            editSignature:false,
+            editSignature: false,
             avatarUrl: "https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png",
-            signature: "暂未设置个性签名，请按编辑按钮进行编辑！",
+            signature: "暂未设置个性签名！",
             username: "John Doe",
             userInfo: {// 用户信息...
                 id: "123",
                 username: "John Doe",
+                userlevel:1, 
+                name:"小李觉",
                 telephone: "18888886666",
                 email: "johndoe@example.com",
+                identity:"111111111111",
 
             },
             editedUserInfo: {
@@ -262,7 +269,9 @@ export default {
         showSignatureDialog() {
             // 在这里显示一个对话框或者表单，让用户输入新的个性签名信息
             // 处理用户输入后，更新 signature
+            this.isshowSignature = !this.isshowSignature;
         },
+
     },
     computed: {
         iconStyle() {
@@ -285,7 +294,7 @@ export default {
 }
 </script>
       
-<style scoped>
+<style>
 .PageTop {
     border: 1px solid #ccc;
     width: 1400px;
@@ -341,7 +350,7 @@ export default {
     font-size: 20px;
     position: absolute;
     top: 390px;
-    left: 200px;
+    left: 185px;
     right: 0;
     padding: 40px;
     /* 调整组件的间距 */

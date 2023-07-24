@@ -12,7 +12,7 @@
                         <el-input v-model="input" placeholder="请输入" />
                     </el-col>
                     <el-col :span="4" :offset="0">
-                        <el-button type="primary" class="search-btn">搜索</el-button>
+                        <el-button type="primary" class="search-btn" @click="search">搜索</el-button>
                     </el-col>
                 </el-row>
             </div>
@@ -36,8 +36,10 @@ export default {
             activeIndex : ref(''),
             logo: require("../assets/project.png"),
             input: '',
+            filteredItems: [],
         }
     },
+    props:['faMsg'],
     methods: {
         handleSelect(key, keyPath) {
       console.log(key, keyPath)
@@ -50,6 +52,17 @@ export default {
         },
         tomainhome(){
             this.$router.push('/MainHome')
+        },
+        search(){
+            console.log(this.input)
+            console.log(this.faMsg)
+            this.filteredItems = this.faMsg.filter((item) => {
+        return (
+          JSON.stringify(item)
+            .toLowerCase()
+            .indexOf(this.searchQuery.toLowerCase()) !== -1
+        )
+      })
         }
     }
 }

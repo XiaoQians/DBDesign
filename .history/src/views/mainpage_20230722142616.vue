@@ -6,7 +6,7 @@
     <el-container>
       <!-- 搜索栏 --><!-- 导航栏 -->
       <el-header>
-        <seach :fa-msg="products"></seach>
+        <seach />
       </el-header>
       <!-- 推荐商品 -->
       <el-main>

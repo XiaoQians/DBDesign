@@ -140,7 +140,7 @@ export default {
     return {
       images: [],
       activeIndex: ref('1'),
-      products: []
+      products: [1]
     }
   },
   components: {
