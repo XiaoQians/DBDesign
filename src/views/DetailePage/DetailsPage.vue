@@ -96,6 +96,8 @@
   
   <script>
   import header from '/src/components/header.vue'
+  import { pictureget } from '@/api/detail.js';//获取图片
+  import { getData } from '@/api/detail.js'; // 导入API请求函数
   export default {
     name:'DetailsPage',
     data() {
@@ -119,9 +121,9 @@
           '/public/p.jpg',
           '/public/p.jpg',
           '/public/p.jpg',
-  ]
+        ]
         }, 
-        activeIndex:0
+        Product:[],
       };
     },
     methods: {
@@ -137,7 +139,25 @@
         this.product.currentimageUrl = imageUrl;
         this.activeIndex = this.product.imageList.findIndex(image => image.url === imageUrl);
       },
-  
+      fetchDeviceDataFromBackend() {
+      const params = {
+        // Adjust the params object according to your needs
+        cate: this.product.type,
+        name: this.product.name,
+        Description: this.product.description,
+        Price: this.product.price,
+        Img: this.product.currentimageUrl,
+        ImgList: this.product.imageList, // An array of image URLs
+      };
+
+      getdevicedata(params)
+        .then((response) => {
+          this.deviceData = response.data; // Assuming the response.data contains the device data object
+        })
+        .catch((error) => {
+          console.error('Error fetching device data:', error);
+        });
+      },
     },
     watch:{
       activeIndex(newIndex) {
@@ -146,6 +166,27 @@
     },
     components: {
         "seach": header,
+    },
+    created() {
+      //先get了图片
+      pictureget().then((res) => {
+        if (res.data === false) {
+          this.$message.error("获得失败");
+        }
+        else {
+          console.log(res.data)
+          this.$message.success("获得成功");
+          this.products=JSON.parse(res.data.DeviceType)
+          this.currentimageUrl=JSON.parse(res.data.DeviceType)
+          console.log(this.currentimageUrl)
+        }
+      }),
+
+      getData().then((res) => {
+        this.Product = res.Product; // 假设返回的数据为一个数组，直接将数据赋值给data
+        }).catch((error) => {
+        console.error('获取数据失败:', error);
+      });
     }
   };
   </script>
